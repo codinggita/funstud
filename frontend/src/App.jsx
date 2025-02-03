@@ -1,34 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, useEffect } from 'react'
+// import { fetchStats, fetchChallenges } from './services/api'
+import Header from './components/Header'
+import Stats from './components/Stats'
+import Challenges from './components/Challenges'
+import Leaderboard from './components/Leaderboard'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [stats, setStats] = useState({
+    gamesPlayed: 0,
+    winRate: 0,
+    streak: 0,
+    rank: 0
+  })
+
+  const [challenges, setChallenges] = useState([]);
+
+  useEffect(() => {
+    loadStats();
+    loadChallenges();
+  }, [])
+
+  const loadStats = async () => {
+    const data = await fetchStats()
+    setStats(data)
+  }
+
+  const loadChallenges = async () => {
+    const data = await fetchChallenges();
+    setChallenges(data);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app-container">
+      <Header />
+      <div className="main-content">
+        <Stats stats={stats} />
+        <Challenges challenges={challenges} />
+        <Leaderboard />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 

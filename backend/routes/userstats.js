@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         // In a real app, get userId from auth middleware
-        const userId = 'example-user-id';
+        const userId = '6794e7416ebeb660b11ab70a';
         const stats = await UserStats.findOne({ userId });
 
         if (!stats) {

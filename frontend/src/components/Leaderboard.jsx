@@ -1,25 +1,24 @@
 import React from 'react'
 
 function Leaderboard() {
-  const leaderboardData = [
-    { rank: 1, username: 'John Doe', score: 3450 },
-    { rank: 2, username: 'Jane Smith', score: 3340 },
-    { rank: 3, username: 'Mike Johnson', score: 3210 }
+  const leaders = [
+    { name: 'John Doe', points: 3450, avatar: '👨‍💻' },
+    { name: 'Jane Smith', points: 2340, avatar: '👩‍💻' },
+    { name: 'Mike Johnson', points: 2210, avatar: '👨‍💻' }
   ]
 
   return (
-    <div className="leaderboard-section">
-      <div className="section-header">
-        <h2>Leaderboard</h2>
-        <div className="trophy-icon">🏆</div>
+    <div className="leaderboard-card">
+      <div className="card-header">
+        <h3>Leaderboard 🏆 </h3>
       </div>
-      <div className="leaderboard-list">
-        {leaderboardData.map((player) => (
-          <div key={player.rank} className="leaderboard-item">
-            <span className="rank">{player.rank}</span>
-            <span className="user-avatar">👤</span>
-            <span className="username">{player.username}</span>
-            <span className="score">{player.score.toLocaleString()}</span>
+      <div className="leaders-list">
+        {leaders.map((leader, index) => (
+          <div key={index} className="leader-item">
+            <span className="rank">{index + 1}</span>
+            <span className="avatar">{leader.avatar}</span>
+            <span className="name">{leader.name}</span>
+            <span className="points">{leader.points}</span>
           </div>
         ))}
       </div>

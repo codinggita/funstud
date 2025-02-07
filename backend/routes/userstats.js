@@ -1,56 +1,60 @@
 import express from 'express';
-import { UserStats } from '../models/User.js';
+import mongoose from 'mongoose';
+import { User, UserStats } from '../models/User.js';
 
 const router = express.Router();
 
 // Get user stats
 router.get('/', async (req, res) => {
     try {
-        // In a real app, get userId from auth middleware
-        const userId = '6794e7416ebeb660b11ab70a';
-        const stats = await UserStats.findOne({ userId });
-
-        if (!stats) {
-            return res.status(404).json({ error: 'Stats not found' });
+        const userId = '6794e7416ebeb660b11ab70a'; // Replace with actual user ID
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
         }
-
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const stats = user.stats;
         res.json(stats);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch stats' });
-    }
-});
-
-// Create new user stats
-router.post('/', async (req, res) => {
-    try {
-        const newStats = new UserStats(req.body);
-        const savedStats = await newStats.save();
-        res.status(201).json(savedStats);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create stats' });
+        res.status(500).json({ error: 'Failed to fetch stats', details: error.message });
     }
 });
 
 // Update user stats by user ID
 router.put('/:userId', async (req, res) => {
     try {
-        const updatedStats = await UserStats.findOneAndUpdate({ userId: req.params.userId }, req.body, { new: true });
-        if (!updatedStats) {
-            return res.status(404).json({ error: 'Stats not found' });
+        const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
         }
-        res.json(updatedStats);
+
+        const updatedUser = await User.findByIdAndUpdate(userId, { stats: req.body }, { new: true });
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(updatedUser.stats);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to update stats' });
+        res.status(500).json({ error: 'Failed to update stats', details: error.message });
     }
 });
 
-// Delete user stats by user ID
+// Delete user by user ID
 router.delete('/:userId', async (req, res) => {
     try {
-        await UserStats.findOneAndDelete({ userId: req.params.userId });
-        res.status(204).send();
+        const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const deletedUser = await User.findByIdAndDelete(userId);
+        if (!deletedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete stats' });
+        res.status(500).json({ error: 'Failed to delete user' });
     }
 });
 
